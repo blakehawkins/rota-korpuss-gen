@@ -6,6 +6,8 @@
 //    - Sanity check dates
 //    - Validate works fine for unicode
 
+extern crate csv;
+
 #[macro_use]
 extern crate error_chain;
 
@@ -20,14 +22,29 @@ extern crate structopt_derive;
 
 use structopt::StructOpt;
 
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
 
 mod errors {
-    error_chain!{}
+    error_chain! {}
 }
 
-use errors::*;
+error_chain! {
+    foreign_links {
+        Csv(::csv::Error);
+        Io(::std::io::Error);
+    }
+
+    errors {
+        InvalidMonth(m: String) {
+            description("invalid month name")
+            display("invalid month name: '{}'", m)
+        }
+    }
+}
+
+// use errors::*;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Rota Korpuss Gen", about = "Generate a rota for Stradini")]
@@ -42,10 +59,10 @@ struct Opt {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Nurse {
-    name: String,
-    days: Option<Vec<String>>,
+    name:    String,
+    days:    Option<Vec<String>>,
     trainee: Option<bool>,
-    rooms: Option<Vec<String>>,
+    rooms:   Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -80,6 +97,32 @@ struct Config {
     dates:       Dates,
 }
 
+fn do_validates(cfg: &Config) -> Result<()> {
+    // Validate dates.
+    // Check month.
+    let valid_months = vec!["january",
+                            "february",
+                            "march",
+                            "april",
+                            "may",
+                            "june",
+                            "july",
+                            "august",
+                            "september",
+                            "october",
+                            "november",
+                            "december"];
+
+    ensure!(valid_months.contains(&&cfg.dates.month[..]),
+            ErrorKind::InvalidMonth(cfg.dates.month.clone()));
+
+    Ok(())
+}
+
+fn do_writes(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+    Ok(())
+}
+
 fn run() -> Result<()> {
     let opt = Opt::from_args();
 
@@ -89,10 +132,28 @@ fn run() -> Result<()> {
     let cfg: Config = serde_yaml::from_reader(f).chain_err(|| format!("The input {} was an invalid yaml file.", &opt.input))?;
     println!("{:?}", cfg);
 
+    do_validates(&cfg)?;
+
+    let out = OpenOptions::new().write(true)
+                                .create(true)
+                                .open(&opt.output)
+                                .chain_err(|| format!("Couldn't open {} for writing.", &opt.output))?;
+
+    let mut wtr = csv::Writer::from_writer(out);
+
+    wtr.write_record(&["Name", "01/02/2018", "02/02/2018", "03/02/2018"])?;
+    wtr.write_record(&["Liga", "main korpuss cathlab", "main korpuss x-ray", "side korpuss cathlab"])?;
+
+    wtr.flush()?;
+
+    println!("\n  File generated successfully into {}.", &opt.output);
+
     Ok(())
 }
 
 fn main() {
+    let mut ret = 0;
+
     if let Err(ref e) = run() {
         use std::io::Write;
         let stderr = &mut ::std::io::stderr();
@@ -109,11 +170,13 @@ fn main() {
         if let Some(backtrace) = e.backtrace() {
             writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
         }
+
+        ret = 1;
     }
 
     // Await a keyboard event before closing.
-    println!("\nPress any key when finished.");
+    println!("\nPress Enter when finished.");
     let _ = std::io::stdin().bytes().next().and_then(|r| r.ok());
 
-    ::std::process::exit(1);
+    ::std::process::exit(ret);
 }
