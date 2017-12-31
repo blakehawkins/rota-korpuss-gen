@@ -7,7 +7,7 @@ people:
         - monday
         - tuesday
         - wednesday
-    - name: Alona
+    - name: Aļona
     - name: Tereze
     - name: Katrina
     - name: Stuvarts
@@ -70,7 +70,6 @@ rooms:
   - "liela halle"
   - "brain drilling room"
   - "stinky room"
-  - "beer room"
   - "electrophysiology room"
 
 dates:
@@ -78,3 +77,4 @@ dates:
   start-day: thursday
   start: 1
   end: 28
+  year: 2018

@@ -1,10 +1,5 @@
 #![recursion_limit = "1024"]
 /// A generator for a simple rota using nurse data.
-// Needs:
-//    - Validate date strings
-//    - Validate room-required found in rooms list
-//    - Sanity check dates
-//    - Validate works fine for unicode
 
 extern crate csv;
 
@@ -22,6 +17,7 @@ extern crate structopt_derive;
 
 use structopt::StructOpt;
 
+use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -45,6 +41,16 @@ error_chain! {
         InvalidWeekday(d: String) {
             description("invalid weekday")
             display("invalid weekday name: '{}'", d)
+        }
+
+        InvalidRoom(r: String) {
+            description("invalid room")
+            display("invalid room name: '{}'", r)
+        }
+
+        InvalidDate(d: usize) {
+            description("invalid date of the month")
+            display("impossible date of the month: '{}'", d)
         }
     }
 }
@@ -91,6 +97,7 @@ struct Dates {
     start_day: String,
     start:     usize,
     end:       usize,
+    year:      usize,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -102,60 +109,111 @@ struct Config {
     dates:       Dates,
 }
 
-fn do_validates(cfg: &Config) -> Result<()> {
+static VALID_MONTHS: [&str; 12] = ["january",
+                                   "february",
+                                   "march",
+                                   "april",
+                                   "may",
+                                   "june",
+                                   "july",
+                                   "august",
+                                   "september",
+                                   "october",
+                                   "november",
+                                   "december"];
+
+static VALID_WEEKDAYS: [&str; 7] = ["monday",
+                                    "tuesday",
+                                    "wednesday",
+                                    "thursday",
+                                    "friday",
+                                    "saturday",
+                                    "sunday"];
+
+fn do_validate_dates(cfg: &Config) -> Result<()> {
     // Validate dates.
     // Check month.
-    let valid_months = vec!["january",
-                            "february",
-                            "march",
-                            "april",
-                            "may",
-                            "june",
-                            "july",
-                            "august",
-                            "september",
-                            "october",
-                            "november",
-                            "december"];
-
-    ensure!(valid_months.contains(&&cfg.dates.month[..]),
+    ensure!(VALID_MONTHS.contains(&&cfg.dates.month[..]),
             ErrorKind::InvalidMonth(cfg.dates.month.clone()));
 
     // Check day of week.
-    let valid_weekdays = vec!["monday",
-                              "tuesday",
-                              "wednesday",
-                              "thursday",
-                              "friday",
-                              "saturday",
-                              "sunday"];
-    ensure!(valid_weekdays.contains(&&cfg.dates.start_day[..]),
+    ensure!(VALID_WEEKDAYS.contains(&&cfg.dates.start_day[..]),
             ErrorKind::InvalidWeekday(cfg.dates.start_day.clone()));
 
     // Check each nurse configured with valid dates.
-    cfg.people.nurses.iter().filter(|n| n.days.is_some()).map(|n| {
-        n.days.unwrap().iter().map(|d| {
-            ensure!(valid_weekdays.contains(&&d[..]),
-                    ErrorKind::InvalidWeekday(d.clone()));
-
-            Ok(())
-        });
-    });
+    for n in cfg.people.nurses.iter().filter(|n| n.days.is_some()) {
+        for d in n.days.clone().unwrap() {
+            ensure!(VALID_WEEKDAYS.contains(&&d[..]),
+                    ErrorKind::InvalidWeekday(d.clone()))
+        }
+    }
 
     // Check each nurse supporter configured with valid dates.
-    cfg.people.supporters.iter().filter(|s| s.days.is_some()).map(|s| {
-        s.days.unwrap().iter().map(|d| {
-            ensure!(valid_weekdays.contains(&&d[..]),
-                    ErrorKind::InvalidWeekday(d.clone()));
-
-            Ok(())
-        });
-    });
+    for s in cfg.people.supporters.iter().filter(|s| s.days.is_some()) {
+        for d in s.days.clone().unwrap() {
+            ensure!(VALID_WEEKDAYS.contains(&&d[..]),
+                    ErrorKind::InvalidWeekday(d.clone()))
+        }
+    }
 
     Ok(())
 }
 
-fn do_writes(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+fn do_validate_rooms(cfg: &Config) -> Result<()> {
+    for n in cfg.people.nurses.iter().filter(|n| n.rooms.is_some()) {
+        for r in n.rooms.clone().unwrap() {
+            ensure!(cfg.rooms.contains(&r),
+                    ErrorKind::InvalidRoom(r.clone()))
+        }
+    }
+
+    Ok(())
+}
+
+fn do_validates(cfg: &Config) -> Result<()> {
+    do_validate_dates(&cfg)?;
+
+    do_validate_rooms(&cfg)?;
+
+    // Sanity check dates.
+    ensure!(cfg.dates.end < 33,
+            ErrorKind::InvalidDate(cfg.dates.end.clone()));
+
+    Ok(())
+}
+
+fn write_header(wtr: &mut csv::Writer<File>, dates: &Dates) -> Result<()> {
+    let mut header: Vec<String> = vec!["Name".into()];
+    let offset = VALID_WEEKDAYS.iter()
+                               .position(|r| r == &&dates.start_day)
+                               .unwrap();
+    let mut day_cycle = VALID_WEEKDAYS.iter().cycle().skip(offset);
+
+    for i in dates.start..(dates.end + 1) {
+        let day = day_cycle.next().unwrap();
+
+        if (day != &"saturday") && (day != &"sunday") {
+            header.push(format!("{} {}, {}",
+                                dates.month,
+                                i,
+                                dates.year));
+        }
+    }
+
+    wtr.write_record(&header)?;
+
+    Ok(())
+}
+
+fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+    write_header(&mut wtr, &cfg.dates)?;
+
+    // Nurses
+    let mut nurses = HashMap::new();
+    unimplemented!();
+
+    wtr.write_record(&["Liga", "main korpuss cathlab", "main korpuss x-ray", "side korpuss cathlab"])?;
+
     Ok(())
 }
 
@@ -172,13 +230,13 @@ fn run() -> Result<()> {
 
     let out = OpenOptions::new().write(true)
                                 .create(true)
+                                .truncate(true)
                                 .open(&opt.output)
                                 .chain_err(|| format!("Couldn't open {} for writing.", &opt.output))?;
 
     let mut wtr = csv::Writer::from_writer(out);
 
-    wtr.write_record(&["Name", "01/02/2018", "02/02/2018", "03/02/2018"])?;
-    wtr.write_record(&["Liga", "main korpuss cathlab", "main korpuss x-ray", "side korpuss cathlab"])?;
+    do_writes(&mut wtr, &cfg)?;
 
     wtr.flush()?;
 
