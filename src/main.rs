@@ -41,6 +41,11 @@ error_chain! {
             description("invalid month name")
             display("invalid month name: '{}'", m)
         }
+
+        InvalidWeekday(d: String) {
+            description("invalid weekday")
+            display("invalid weekday name: '{}'", d)
+        }
     }
 }
 
@@ -115,6 +120,37 @@ fn do_validates(cfg: &Config) -> Result<()> {
 
     ensure!(valid_months.contains(&&cfg.dates.month[..]),
             ErrorKind::InvalidMonth(cfg.dates.month.clone()));
+
+    // Check day of week.
+    let valid_weekdays = vec!["monday",
+                              "tuesday",
+                              "wednesday",
+                              "thursday",
+                              "friday",
+                              "saturday",
+                              "sunday"];
+    ensure!(valid_weekdays.contains(&&cfg.dates.start_day[..]),
+            ErrorKind::InvalidWeekday(cfg.dates.start_day.clone()));
+
+    // Check each nurse configured with valid dates.
+    cfg.people.nurses.iter().filter(|n| n.days.is_some()).map(|n| {
+        n.days.unwrap().iter().map(|d| {
+            ensure!(valid_weekdays.contains(&&d[..]),
+                    ErrorKind::InvalidWeekday(d.clone()));
+
+            Ok(())
+        });
+    });
+
+    // Check each nurse supporter configured with valid dates.
+    cfg.people.supporters.iter().filter(|s| s.days.is_some()).map(|s| {
+        s.days.unwrap().iter().map(|d| {
+            ensure!(valid_weekdays.contains(&&d[..]),
+                    ErrorKind::InvalidWeekday(d.clone()));
+
+            Ok(())
+        });
+    });
 
     Ok(())
 }
