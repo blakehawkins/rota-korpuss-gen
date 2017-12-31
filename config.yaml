@@ -1,0 +1,80 @@
+---
+people:
+  nurses:
+    - name: Liga
+    - name: Alise
+      days:
+        - monday
+        - tuesday
+        - wednesday
+    - name: Alona
+    - name: Tereze
+    - name: Katrina
+    - name: Stuvarts
+    - name: Lenins
+    - name: Janis
+    - name: James
+    - name: Koshka
+    - name: Zaklina
+    - name: Karlis
+    - name: "Zane G."
+      rooms:
+        - "electrophysiology room"
+    - name: Kacha
+      trainee: true
+      days:
+        - tuesday
+        - thursday
+        - friday
+    - name: Sara
+      trainee: true
+    - name: Sakura
+      trainee: true
+    - name: Milestiba
+    - name: Agnese
+      days:
+        - monday
+        - tuesday
+        - thursday
+        - friday
+    - name: Lote
+    - name: Toms
+
+  supporters:
+    - name: Sandra
+      days:
+        - monday
+        - tuesday
+    - name: Ieva
+    - name: Daima
+    - name: Trumps
+    - name: Daiga
+      days:
+        - monday
+        - tuesday
+        - thursday
+        - friday
+    - name: Kiwis
+      days:
+        - monday
+        - tuesday
+        - wednesday
+
+nurses-jobs:
+  - cathlab
+  - xray
+
+rooms:
+  - "main korpuss"
+  - "side korpuss"
+  - "liela halle"
+  - "brain drilling room"
+  - "stinky room"
+  - "beer room"
+  - "electrophysiology room"
+
+dates:
+  month: february
+  start-day: thursday
+  start: 1
+  end: 28
