@@ -4,9 +4,7 @@ people:
     - name: Liga
     - name: Alise
     - name: Aļona
-    - name: Tereze
     - name: Katrina
-    - name: Stuvarts
     - name: Lenins
     - name: Angela
       days:
@@ -44,6 +42,8 @@ people:
     - name: Trumps
     - name: Daiga
     - name: Kiwis
+    - name: Sigita
+    - name: "Dace P."
 
 nurses-jobs:
   - cathlab

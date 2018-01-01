@@ -25,6 +25,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
+use std::iter;
 
 mod errors {
     error_chain! {}
@@ -229,22 +230,22 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
         let day = day_cycle.next().unwrap();
 
         if (day != &"saturday") && (day != &"sunday") {
+            let off_variant = (&"off".into(), "".to_string());
             let mut job_variants = cfg.rooms
                                       .iter()
                                       .cartesian_product(cfg.nurses_jobs
                                                             .clone())
+                                      .chain(iter::repeat(off_variant).take(cfg.people.nurses.len() - cfg.rooms.len() * cfg.nurses_jobs.len()))
                                       .cycle()
-                                      .skip(dom)
-                                      .take(cfg.rooms.len() * cfg.nurses_jobs.len());
+                                      .skip(dom);
 
             cfg.people.nurses.iter().for_each(|n| {
                 let its_vec = nurse_map.get_mut(&&n.name[..]).unwrap();
 
                 if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
-                    (*its_vec).push("off-day".into());
+                    (*its_vec).push("off (part time)".into());
                 } else {
-                    let off_variant = (&"off".into(), "forced".to_string());
-                    let next_pair = job_variants.next().unwrap_or(off_variant);
+                    let next_pair = job_variants.next().unwrap();
                     (*its_vec).push(format!("{} {}",
                              next_pair.0,
                              next_pair.1));
@@ -281,11 +282,12 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
         let day = day_cycle.next().unwrap();
 
         if (day != &"saturday") && (day != &"sunday") {
+            let off_variant = &"off".to_string();
             let mut job_variants = cfg.rooms
                                       .iter()
+                                      .chain(iter::repeat(off_variant).take(cfg.people.supporters.len() - cfg.rooms.len()))
                                       .cycle()
-                                      .skip(dom)
-                                      .take(cfg.rooms.len());
+                                      .skip(dom);
 
             cfg.people.supporters.iter().for_each(|n| {
                 let its_vec = supporter_map.get_mut(&&n.name[..]).unwrap();
@@ -293,8 +295,7 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                 if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
                     (*its_vec).push("off-day".into());
                 } else {
-                    let off_variant = &"off forced".into();
-                    let next_job = job_variants.next().unwrap_or(off_variant);
+                    let next_job = job_variants.next().unwrap();
                     (*its_vec).push(format!("{}", next_job));
                 }
             });
