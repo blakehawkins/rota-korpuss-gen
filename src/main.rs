@@ -6,6 +6,8 @@ extern crate csv;
 #[macro_use]
 extern crate error_chain;
 
+extern crate itertools;
+
 #[macro_use]
 extern crate serde_derive;
 
@@ -14,6 +16,8 @@ extern crate structopt;
 
 #[macro_use]
 extern crate structopt_derive;
+
+use itertools::Itertools;
 
 use structopt::StructOpt;
 
@@ -209,10 +213,99 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
     write_header(&mut wtr, &cfg.dates)?;
 
     // Nurses
-    let mut nurses = HashMap::new();
-    unimplemented!();
+    let mut nurse_map: HashMap<&str, Vec<String>> = HashMap::new();
+    cfg.people.nurses.iter().for_each(|n| {
+        nurse_map.insert(&n.name, vec![]);
+    });
 
-    wtr.write_record(&["Liga", "main korpuss cathlab", "main korpuss x-ray", "side korpuss cathlab"])?;
+    let offset = VALID_WEEKDAYS.iter()
+                               .position(|r| r == &&cfg.dates.start_day)
+                               .unwrap();
+    let mut day_cycle = VALID_WEEKDAYS.iter().cycle().skip(offset);
+
+    let people_count = cfg.people.nurses.len();
+
+    (cfg.dates.start..(cfg.dates.end + 1)).enumerate().for_each(|(idx, dom)| {
+        let day = day_cycle.next().unwrap();
+
+        if (day != &"saturday") && (day != &"sunday") {
+            let mut job_variants = cfg.rooms
+                                      .iter()
+                                      .cartesian_product(cfg.nurses_jobs
+                                                            .clone())
+                                      .cycle()
+                                      .skip(dom)
+                                      .take(cfg.rooms.len() * cfg.nurses_jobs.len());
+
+            cfg.people.nurses.iter().for_each(|n| {
+                let its_vec = nurse_map.get_mut(&&n.name[..]).unwrap();
+
+                if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
+                    (*its_vec).push("off-day".into());
+                } else {
+                    let off_variant = (&"off".into(), "forced".to_string());
+                    let next_pair = job_variants.next().unwrap_or(off_variant);
+                    (*its_vec).push(format!("{} {}",
+                             next_pair.0,
+                             next_pair.1));
+                }
+            });
+        }
+    });
+
+    for (n, jobs) in &nurse_map {
+        let mut record = jobs.clone();
+        record.insert(0, (*n).into());
+        wtr.write_record(&record)?;
+    }
+
+    // Empty row
+    let mut empty_record = vec![""; nurse_map.iter().next().unwrap().1.len()];
+    empty_record.insert(0, "");
+    wtr.write_record(&empty_record)?;
+
+    // Supporters
+    let mut supporter_map: HashMap<&str, Vec<String>> = HashMap::new();
+    cfg.people.supporters.iter().for_each(|n| {
+        supporter_map.insert(&n.name, vec![]);
+    });
+
+    let offset = VALID_WEEKDAYS.iter()
+                               .position(|r| r == &&cfg.dates.start_day)
+                               .unwrap();
+    let mut day_cycle = VALID_WEEKDAYS.iter().cycle().skip(offset);
+
+    let people_count = cfg.people.supporters.len();
+
+    (cfg.dates.start..(cfg.dates.end + 1)).enumerate().for_each(|(idx, dom)| {
+        let day = day_cycle.next().unwrap();
+
+        if (day != &"saturday") && (day != &"sunday") {
+            let mut job_variants = cfg.rooms
+                                      .iter()
+                                      .cycle()
+                                      .skip(dom)
+                                      .take(cfg.rooms.len());
+
+            cfg.people.supporters.iter().for_each(|n| {
+                let its_vec = supporter_map.get_mut(&&n.name[..]).unwrap();
+
+                if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
+                    (*its_vec).push("off-day".into());
+                } else {
+                    let off_variant = &"off forced".into();
+                    let next_job = job_variants.next().unwrap_or(off_variant);
+                    (*its_vec).push(format!("{}", next_job));
+                }
+            });
+        }
+    });
+
+    for (n, jobs) in &supporter_map {
+        let mut record = jobs.clone();
+        record.insert(0, (*n).into());
+        wtr.write_record(&record)?;
+    }
 
     Ok(())
 }
@@ -224,7 +317,6 @@ fn run() -> Result<()> {
                               .open(&opt.input)
                               .chain_err(|| format!("Couldn't open {} as a file path.", &opt.input))?;
     let cfg: Config = serde_yaml::from_reader(f).chain_err(|| format!("The input {} was an invalid yaml file.", &opt.input))?;
-    println!("{:?}", cfg);
 
     do_validates(&cfg)?;
 
