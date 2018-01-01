@@ -1,0 +1,15 @@
+[tasks.build]
+command = "cargo"
+args = ["build", "--release"]
+dependencies = []
+
+[tasks.zip]
+script = [
+'''
+zip rota-gen.zip -j config.yaml target/release/rota-korpuss-gen.exe
+echo "Archive generated in rota-gen.zip"
+'''
+]
+
+[tasks.release]
+dependencies = ["build", "zip"]
