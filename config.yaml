@@ -63,3 +63,5 @@ dates:
   start: 1
   end: 28
   year: 2018
+
+excel: true

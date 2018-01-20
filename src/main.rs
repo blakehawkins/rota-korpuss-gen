@@ -112,6 +112,7 @@ struct Config {
     nurses_jobs: Vec<String>,
     rooms:       Vec<String>,
     dates:       Dates,
+    excel:       Option<bool>,
 }
 
 static VALID_MONTHS: [&str; 12] = ["january",
@@ -187,6 +188,14 @@ fn do_validates(cfg: &Config) -> Result<()> {
     Ok(())
 }
 
+fn maybe_write_excel_sep(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+    if cfg.excel.is_some() && cfg.excel.unwrap() != false {
+        wtr.write_record("sep=,");
+    }
+
+    Ok(())
+}
+
 fn write_header(wtr: &mut csv::Writer<File>, dates: &Dates) -> Result<()> {
     let mut header: Vec<String> = vec!["Name".into()];
     let offset = VALID_WEEKDAYS.iter()
@@ -211,6 +220,7 @@ fn write_header(wtr: &mut csv::Writer<File>, dates: &Dates) -> Result<()> {
 }
 
 fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+    maybe_write_excel_sep(&mut wtr, &cfg)?;
     write_header(&mut wtr, &cfg.dates)?;
 
     // Nurses

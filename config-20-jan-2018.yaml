@@ -1,0 +1,65 @@
+---
+people:
+  nurses:
+    - name: Rita
+    - name: Guntra
+    - name: Astrīda
+    - name: Maija
+    - name: Daina
+    - name: Anželika
+      days:
+        - monday
+        - tuesday
+        - thursday
+        - friday
+    - name: Zane
+    - name: Daiga
+    - name: Liene
+    - name: Zita
+    - name: "Zane S."
+      rooms:
+        - "e"
+    - name: Madara
+      trainee: true
+    - name: Ļuba
+      trainee: true
+    - name: Everita
+      trainee: true
+    - name: Aļina
+    - name: Marija
+      rooms:
+        - "e"
+
+  supporters:
+    - name: Sigita
+    - name: Dace
+    - name: Ilze
+      days:
+        - monday
+        - tuesday
+        - thursday
+        - friday
+    - name: Dace.P
+    - name: Svetlana
+    - name: Rasma
+    - name: Daina
+    - name: Alla
+
+nurses-jobs:
+  - z
+  - p
+
+rooms:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "6"
+  - "e"
+
+dates:
+  month: april
+  start-day: sunday
+  start: 1
+  end: 30
+  year: 2018
