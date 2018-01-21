@@ -8,8 +8,8 @@ args = ["build", "--release"]
 [tasks.zip]
 script = [
 '''
-zip rota-gen.zip -j config* target/release/rota-korpuss-gen.exe
-echo "Archive generated in rota-gen.zip"
+zip rota-gen-0.1.1.zip -j config* target/release/rota-korpuss-gen.exe
+echo "Archive generated in rota-gen-0.1.1.zip"
 '''
 ]
 
