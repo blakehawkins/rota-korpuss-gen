@@ -57,6 +57,8 @@ rooms:
   - "6"
   - "e"
 
+job-room-sep: ""
+
 dates:
   month: april
   start-day: sunday

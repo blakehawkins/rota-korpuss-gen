@@ -108,11 +108,12 @@ struct Dates {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "kebab-case")]
 struct Config {
-    people:      People,
-    nurses_jobs: Vec<String>,
-    rooms:       Vec<String>,
-    dates:       Dates,
-    excel:       Option<bool>,
+    people:       People,
+    nurses_jobs:  Vec<String>,
+    rooms:        Vec<String>,
+    dates:        Dates,
+    excel:        Option<bool>,
+    job_room_sep: Option<String>,
 }
 
 static VALID_MONTHS: [&str; 12] = ["january",
@@ -248,6 +249,8 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                                       .cycle()
                                       .skip(dom);
 
+            let job_room_sep = cfg.job_room_sep.clone().unwrap_or(" ".into());
+
             cfg.people.nurses.iter().for_each(|n| {
                 let its_vec = nurse_map.get_mut(&&n.name[..]).unwrap();
 
@@ -255,8 +258,9 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                     (*its_vec).push("off (part time)".into());
                 } else {
                     let next_pair = job_variants.next().unwrap();
-                    (*its_vec).push(format!("{} {}",
+                    (*its_vec).push(format!("{}{}{}",
                              next_pair.0,
+                             &job_room_sep,
                              next_pair.1));
                 }
             });

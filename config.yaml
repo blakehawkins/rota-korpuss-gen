@@ -57,6 +57,8 @@ rooms:
   - "rm.6"
   - "electrophysiology room"
 
+job-room-sep: ""
+
 dates:
   month: february
   start-day: thursday
