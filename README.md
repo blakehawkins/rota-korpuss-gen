@@ -1,1 +1,1 @@
-`cargo make release`
+`cargo make
