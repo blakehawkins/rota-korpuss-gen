@@ -188,9 +188,9 @@ fn do_validates(cfg: &Config) -> Result<()> {
     Ok(())
 }
 
-fn maybe_write_excel_sep(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+fn maybe_write_excel_sep<W: std::io::Write>(wtr: &mut W, cfg: &Config) -> Result<()> {
     if cfg.excel.is_some() && cfg.excel.unwrap() != false {
-        wtr.write_record("sep=,");
+        writeln!(wtr, "sep=,")?;
     }
 
     Ok(())
@@ -220,7 +220,6 @@ fn write_header(wtr: &mut csv::Writer<File>, dates: &Dates) -> Result<()> {
 }
 
 fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
-    maybe_write_excel_sep(&mut wtr, &cfg)?;
     write_header(&mut wtr, &cfg.dates)?;
 
     // Nurses
@@ -331,11 +330,13 @@ fn run() -> Result<()> {
 
     do_validates(&cfg)?;
 
-    let out = OpenOptions::new().write(true)
-                                .create(true)
-                                .truncate(true)
-                                .open(&opt.output)
-                                .chain_err(|| format!("Couldn't open {} for writing.", &opt.output))?;
+    let mut out = OpenOptions::new().write(true)
+                                    .create(true)
+                                    .truncate(true)
+                                    .open(&opt.output)
+                                    .chain_err(|| format!("Couldn't open {} for writing.", &opt.output))?;
+
+    maybe_write_excel_sep(&mut out, &cfg)?;
 
     let mut wtr = csv::Writer::from_writer(out);
 
