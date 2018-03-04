@@ -6,6 +6,7 @@ command = "cargo"
 args = ["build", "--release"]
 
 [tasks.zip]
+script_runner = "@shell"
 script = [
 '''
 zip rota-gen-${CARGO_MAKE_CRATE_VERSION}.zip -j config* target/release/rota-korpuss-gen.exe
