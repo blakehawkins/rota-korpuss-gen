@@ -1,1 +1,1 @@
-`cargo make
+`cargo make`
