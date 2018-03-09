@@ -248,14 +248,15 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
             let empty_nurse_job = NursesJob { name: "".into(),
                                               for_trainees: Some(true) };
             let off_variant = (&"off".into(), &empty_nurse_job);
-            let max_chain_length = people_count -
-                                   (cfg.rooms.len() * cfg.nurses_jobs.len());
+            let max_off_length = people_count -
+                                 (cfg.rooms.len() * cfg.nurses_jobs.len());
             let mut job_variants = cfg.rooms
                                       .iter()
                                       .cartesian_product(&cfg.nurses_jobs)
-                                      .chain(iter::repeat(off_variant).take(max_chain_length))
+                                      .chain(iter::repeat(off_variant).take(max_off_length))
                                       .cycle()
                                       .skip(dom)
+                                      .take(cfg.dates.end - cfg.dates.start)
                                       .collect::<Vec<(&String, &NursesJob)>>();
 
             let job_room_sep = cfg.job_room_sep.clone().unwrap_or(" ".into());
@@ -271,14 +272,14 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                     let next_pair = if n.trainee.unwrap_or(false) {
                         let mut clone = job_variants.clone();
                         clone.retain(|j| j.1.for_trainees.unwrap_or(true));
-                        let variant = clone.pop().unwrap();
+                        let variant = clone.pop().expect("No trainee job variants left");
                         let idx = job_variants.iter()
                                               .position(|j| j.1.for_trainees.unwrap_or(true))
-                                              .unwrap();
+                                              .expect("No trainee job variant left to remove");
                         job_variants.remove(idx);
                         variant
                     } else {
-                        job_variants.pop().unwrap()
+                        job_variants.pop().expect("No job variants left")
                     };
 
                     (*its_vec).push(format!("{}{}{}",
