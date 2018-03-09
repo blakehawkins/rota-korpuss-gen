@@ -46,8 +46,10 @@ people:
     - name: "Dace P."
 
 nurses-jobs:
-  - cathlab
-  - xray
+  - name: cathlab
+    for-trainees: false
+  - name: xray
+    for-trainees: true
 
 rooms:
   - "rm.1"

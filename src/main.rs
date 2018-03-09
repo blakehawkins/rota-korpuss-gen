@@ -60,8 +60,6 @@ error_chain! {
     }
 }
 
-// use errors::*;
-
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Rota Korpuss Gen", about = "Generate a rota for Stradini")]
 struct Opt {
@@ -107,9 +105,16 @@ struct Dates {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "kebab-case")]
+struct NursesJob {
+    name:         String,
+    for_trainees: Option<bool>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "kebab-case")]
 struct Config {
     people:       People,
-    nurses_jobs:  Vec<String>,
+    nurses_jobs:  Vec<NursesJob>,
     rooms:        Vec<String>,
     dates:        Dates,
     excel:        Option<bool>,
@@ -236,18 +241,22 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
 
     let people_count = cfg.people.nurses.len();
 
-    (cfg.dates.start..(cfg.dates.end + 1)).enumerate().for_each(|(idx, dom)| {
+    (cfg.dates.start..(cfg.dates.end + 1)).for_each(|dom| {
         let day = day_cycle.next().unwrap();
 
         if (day != &"saturday") && (day != &"sunday") {
-            let off_variant = (&"off".into(), "".to_string());
+            let empty_nurse_job = NursesJob { name: "".into(),
+                                              for_trainees: Some(true) };
+            let off_variant = (&"off".into(), &empty_nurse_job);
+            let max_chain_length = people_count -
+                                   (cfg.rooms.len() * cfg.nurses_jobs.len());
             let mut job_variants = cfg.rooms
                                       .iter()
-                                      .cartesian_product(cfg.nurses_jobs
-                                                            .clone())
-                                      .chain(iter::repeat(off_variant).take(cfg.people.nurses.len() - cfg.rooms.len() * cfg.nurses_jobs.len()))
+                                      .cartesian_product(&cfg.nurses_jobs)
+                                      .chain(iter::repeat(off_variant).take(max_chain_length))
                                       .cycle()
-                                      .skip(dom);
+                                      .skip(dom)
+                                      .collect::<Vec<(&String, &NursesJob)>>();
 
             let job_room_sep = cfg.job_room_sep.clone().unwrap_or(" ".into());
 
@@ -257,11 +266,25 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                 if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
                     (*its_vec).push("off (part time)".into());
                 } else {
-                    let next_pair = job_variants.next().unwrap();
+                    // Trainees need to mutate the jobs vector in a different
+                    // way than front to back.
+                    let next_pair = if n.trainee.unwrap_or(false) {
+                        let mut clone = job_variants.clone();
+                        clone.retain(|j| j.1.for_trainees.unwrap_or(true));
+                        let variant = clone.pop().unwrap();
+                        let idx = job_variants.iter()
+                                              .position(|j| j.1.for_trainees.unwrap_or(true))
+                                              .unwrap();
+                        job_variants.remove(idx);
+                        variant
+                    } else {
+                        job_variants.pop().unwrap()
+                    };
+
                     (*its_vec).push(format!("{}{}{}",
-                             next_pair.0,
-                             &job_room_sep,
-                             next_pair.1));
+                            next_pair.0,
+                            &job_room_sep,
+                            next_pair.1.name));
                 }
             });
         }
@@ -291,14 +314,14 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
 
     let people_count = cfg.people.supporters.len();
 
-    (cfg.dates.start..(cfg.dates.end + 1)).enumerate().for_each(|(idx, dom)| {
+    (cfg.dates.start..(cfg.dates.end + 1)).for_each(|dom| {
         let day = day_cycle.next().unwrap();
 
         if (day != &"saturday") && (day != &"sunday") {
             let off_variant = &"off".to_string();
             let mut job_variants = cfg.rooms
                                       .iter()
-                                      .chain(iter::repeat(off_variant).take(cfg.people.supporters.len() - cfg.rooms.len()))
+                                      .chain(iter::repeat(off_variant).take(people_count - cfg.rooms.len()))
                                       .cycle()
                                       .skip(dom);
 
@@ -367,8 +390,6 @@ fn main() {
             writeln!(stderr, "caused by: {}", e).expect(errmsg);
         }
 
-        // The backtrace is not always generated. Try to run this example with
-        // `RUST_BACKTRACE=1`.
         if let Some(backtrace) = e.backtrace() {
             writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
         }

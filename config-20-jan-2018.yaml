@@ -46,8 +46,10 @@ people:
     - name: Alla
 
 nurses-jobs:
-  - z
-  - p
+  - name: z
+    for_trainees: false
+  - name: p
+    for_trainees: true
 
 rooms:
   - "1"
