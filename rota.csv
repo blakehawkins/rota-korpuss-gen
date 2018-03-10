@@ -1,29 +1,29 @@
 sep=,
 Name,"february 1, 2018","february 2, 2018","february 5, 2018","february 6, 2018","february 7, 2018","february 8, 2018","february 9, 2018","february 12, 2018","february 13, 2018","february 14, 2018","february 15, 2018","february 16, 2018","february 19, 2018","february 20, 2018","february 21, 2018","february 22, 2018","february 23, 2018","february 26, 2018","february 27, 2018","february 28, 2018"
-Angela,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,off (part time),electrophysiology roomxray,off,off,off,off (part time),rm.1cathlab,rm.1xray,rm.3cathlab,rm.3xray,off (part time),rm.4xray,rm.6cathlab,electrophysiology roomxray,off,off (part time)
-Koshka,rm.2cathlab,rm.2xray,rm.4cathlab,rm.4xray,rm.6xray,rm.6xray,electrophysiology roomcathlab,off,off,off,off,off,rm.2cathlab,rm.2xray,rm.3xray,rm.3xray,rm.4cathlab,rm.6xray,electrophysiology roomcathlab,off
-Sakura,off,off,rm.1xray,rm.2xray,rm.3xray,rm.3xray,rm.3xray,rm.6xray,rm.6xray,off,off,off,off,off,rm.1xray,rm.1xray,rm.1xray,rm.3xray,rm.3xray,rm.4xray
-Milestiba,off,off,rm.2cathlab,rm.2xray,rm.3xray,rm.3xray,rm.4cathlab,rm.6xray,electrophysiology roomcathlab,off,off,off,off,off,rm.1xray,rm.1xray,rm.2cathlab,rm.3xray,rm.4cathlab,rm.6cathlab
-Sara,off,off,rm.1xray,rm.2xray,rm.3xray,rm.3xray,rm.3xray,rm.6xray,rm.6xray,off,off,off,off,off,rm.1xray,rm.1xray,rm.1xray,rm.3xray,rm.3xray,rm.4xray
-Zane G.,off,rm.1cathlab,rm.2xray,rm.3cathlab,rm.4cathlab,rm.4cathlab,rm.4xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.2cathlab,rm.2cathlab,rm.2xray,rm.4cathlab,rm.4xray,rm.6xray
 James,rm.2xray,rm.3cathlab,rm.4xray,rm.6cathlab,electrophysiology roomcathlab,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.2xray,rm.3cathlab,rm.4cathlab,rm.4cathlab,rm.4xray,electrophysiology roomcathlab,electrophysiology roomxray,off
-Karlis,rm.1cathlab,rm.1xray,rm.3cathlab,rm.3xray,rm.4xray,rm.4xray,rm.6cathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.1xray,rm.2xray,rm.2xray,rm.3cathlab,rm.4xray,rm.6cathlab,electrophysiology roomcathlab
-Agnese,off,off,rm.1xray,rm.2cathlab,rm.3cathlab,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,electrophysiology roomxray,electrophysiology roomxray,off,off,off,rm.1cathlab,rm.1cathlab,rm.1xray,rm.3cathlab,rm.3xray,rm.4xray
-Alise,rm.6cathlab,rm.6xray,off,off,off,off,off,rm.1xray,rm.2cathlab,rm.2xray,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off
-Toms,off,off,off,rm.1cathlab,rm.2cathlab,rm.2cathlab,rm.2xray,rm.4cathlab,rm.4xray,rm.6xray,rm.6xray,electrophysiology roomcathlab,off,off,off,off,off,rm.2cathlab,rm.2xray,rm.3xray
-Lenins,rm.3xray,rm.4cathlab,rm.6xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.1xray,rm.2cathlab,rm.3xray,rm.4cathlab,rm.4xray,rm.6cathlab,rm.6xray,off,off,off
+Koshka,rm.2cathlab,rm.2xray,rm.4cathlab,rm.4xray,rm.6xray,rm.6xray,electrophysiology roomcathlab,off,off,off,off,off,rm.2cathlab,rm.2xray,rm.3xray,rm.3xray,rm.4cathlab,rm.6xray,electrophysiology roomcathlab,off
 Aļona,rm.4xray,rm.6cathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.1xray,rm.2cathlab,rm.2xray,rm.3cathlab,rm.4xray,rm.6cathlab,rm.6xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off
-Zaklina,rm.1xray,rm.2cathlab,rm.3xray,rm.4cathlab,rm.6cathlab,rm.6cathlab,rm.6xray,off,off,off,off,off,rm.1xray,rm.2cathlab,rm.3cathlab,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,electrophysiology roomxray
+Milestiba,off,off,rm.2cathlab,rm.2xray,rm.3xray,rm.3xray,rm.4cathlab,rm.4cathlab,rm.4xray,rm.6xray,rm.6xray,electrophysiology roomcathlab,off,off,rm.1xray,rm.1xray,rm.2cathlab,rm.3xray,rm.4cathlab,rm.6cathlab
+Lenins,rm.3xray,rm.4cathlab,rm.6xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.1xray,rm.2cathlab,rm.3xray,rm.4cathlab,rm.4xray,rm.6cathlab,rm.6xray,off,off,off
 Liga,rm.6xray,electrophysiology roomcathlab,off,off,off,off,off,rm.2cathlab,rm.2xray,rm.3cathlab,rm.3xray,rm.4cathlab,rm.6xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab
-Kacha,off,off,rm.1xray,rm.2xray,rm.3xray,rm.3xray,rm.3xray,rm.6xray,rm.6xray,off,off,off,off,off,rm.1xray,rm.1xray,rm.1xray,rm.3xray,rm.3xray,rm.4xray
 Katrina,rm.4cathlab,rm.4xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.1xray,rm.2cathlab,rm.2xray,rm.4cathlab,rm.4xray,rm.6cathlab,rm.6xray,electrophysiology roomcathlab,off,off,off
-Lote,off,off,rm.1cathlab,rm.1xray,rm.2xray,rm.2xray,rm.3cathlab,rm.4xray,rm.6cathlab,electrophysiology roomcathlab,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.2xray,rm.3cathlab,rm.4cathlab
+Zane G.,off,rm.1cathlab,rm.2xray,rm.3cathlab,rm.4cathlab,rm.4cathlab,rm.4xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.2cathlab,rm.2cathlab,rm.2xray,rm.4cathlab,rm.4xray,rm.6xray
+Alise,rm.6cathlab,rm.6xray,off,off,off,off,off,rm.1xray,rm.2cathlab,rm.2xray,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,electrophysiology roomcathlab,electrophysiology roomxray,off,off,off,off
+Karlis,rm.1cathlab,rm.1xray,rm.3cathlab,rm.3xray,rm.4xray,rm.4xray,rm.6cathlab,electrophysiology roomxray,off,off,off,off,rm.1cathlab,rm.1xray,rm.2xray,rm.2xray,rm.3cathlab,rm.4xray,rm.6cathlab,electrophysiology roomcathlab
+Sakura,off,off,rm.1xray,rm.2xray,rm.3xray,rm.3xray,rm.3xray,rm.4xray,rm.6cathlab,electrophysiology roomcathlab,electrophysiology roomcathlab,electrophysiology roomxray,off,off,rm.1xray,rm.1xray,rm.1xray,rm.3xray,rm.3xray,rm.4xray
+Agnese,off,off,rm.1xray,rm.2cathlab,rm.3cathlab,rm.3cathlab,rm.3xray,rm.3xray,rm.4cathlab,rm.6cathlab,rm.6cathlab,rm.6xray,off,off,rm.1cathlab,rm.1cathlab,rm.1xray,rm.3cathlab,rm.3xray,rm.4xray
+Zaklina,rm.1xray,rm.2cathlab,rm.3xray,rm.4cathlab,rm.6cathlab,rm.6cathlab,rm.6xray,off,off,off,off,off,rm.1xray,rm.2cathlab,rm.3cathlab,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,electrophysiology roomxray
+Toms,off,off,off,rm.1cathlab,rm.2cathlab,rm.2cathlab,rm.2xray,rm.2xray,rm.3cathlab,rm.4cathlab,rm.4cathlab,rm.4xray,off,off,off,off,off,rm.2cathlab,rm.2xray,rm.3xray
+Sara,off,off,rm.1xray,rm.2xray,rm.3xray,rm.3xray,rm.3xray,rm.6cathlab,rm.6xray,electrophysiology roomxray,electrophysiology roomxray,off,off,off,rm.1xray,rm.1xray,rm.1xray,rm.3xray,rm.3xray,rm.4xray
+Kacha,off,off,rm.1xray,rm.2xray,rm.3xray,rm.3xray,rm.3xray,rm.6xray,electrophysiology roomcathlab,off,off,off,off,off,rm.1xray,rm.1xray,rm.1xray,rm.3xray,rm.3xray,rm.4xray
+Lote,off,off,rm.1cathlab,rm.1xray,rm.2xray,rm.2xray,rm.3cathlab,rm.3cathlab,rm.3xray,rm.4xray,rm.4xray,rm.6cathlab,off,off,off,off,rm.1cathlab,rm.2xray,rm.3cathlab,rm.4cathlab
+Angela,rm.3cathlab,rm.3xray,rm.6cathlab,rm.6xray,off (part time),electrophysiology roomxray,off,off,off,off (part time),rm.1cathlab,rm.1xray,rm.3cathlab,rm.3xray,off (part time),rm.4xray,rm.6cathlab,electrophysiology roomxray,off,off (part time)
 ,,,,,,,,,,,,,,,,,,,,
+Sigita,off,rm.1,rm.4,rm.6,rm.6,off,off,rm.3,rm.4,rm.4,electrophysiology room,off,rm.2,rm.3,rm.3,rm.6,electrophysiology room,rm.1,rm.2,rm.2
+Dace P.,rm.1,rm.2,rm.6,electrophysiology room,electrophysiology room,off,rm.1,rm.4,rm.6,rm.6,off,off,rm.3,rm.4,rm.4,electrophysiology room,off,rm.2,rm.3,rm.3
+Daiga,electrophysiology room,off,rm.2,rm.3,rm.3,rm.6,electrophysiology room,rm.1,rm.2,rm.2,rm.4,rm.6,off,rm.1,rm.1,rm.3,rm.4,off,off,off
+Sandra,rm.2,rm.3,electrophysiology room,off,off,rm.1,rm.2,rm.6,electrophysiology room,off,off,rm.1,rm.4,rm.6,electrophysiology room,off,off,rm.3,rm.4,rm.6
 Ilze,rm.4,rm.6,off,rm.1,off-day,rm.3,rm.4,off,off,off-day,rm.2,rm.3,electrophysiology room,off,off-day,rm.1,rm.2,rm.6,electrophysiology room,off-day
 Kiwis,off,off,rm.3,rm.4,rm.4,electrophysiology room,off,rm.2,rm.3,rm.3,rm.6,electrophysiology room,rm.1,rm.2,rm.2,rm.4,rm.6,off,rm.1,rm.1
 Trumps,rm.6,electrophysiology room,rm.1,rm.2,rm.2,rm.4,rm.6,off,rm.1,rm.1,rm.3,rm.4,off,off,off,rm.2,rm.3,electrophysiology room,off,off
 Ieva,rm.3,rm.4,off,off,rm.1,rm.2,rm.3,electrophysiology room,off,off,rm.1,rm.2,rm.6,electrophysiology room,off,off,rm.1,rm.4,rm.6,electrophysiology room
-Sigita,off,rm.1,rm.4,rm.6,rm.6,off,off,rm.3,rm.4,rm.4,electrophysiology room,off,rm.2,rm.3,rm.3,rm.6,electrophysiology room,rm.1,rm.2,rm.2
-Dace P.,rm.1,rm.2,rm.6,electrophysiology room,electrophysiology room,off,rm.1,rm.4,rm.6,rm.6,off,off,rm.3,rm.4,rm.4,electrophysiology room,off,rm.2,rm.3,rm.3
-Sandra,rm.2,rm.3,electrophysiology room,off,off,rm.1,rm.2,rm.6,electrophysiology room,off,off,rm.1,rm.4,rm.6,electrophysiology room,off,off,rm.3,rm.4,rm.6
-Daiga,electrophysiology room,off,rm.2,rm.3,rm.3,rm.6,electrophysiology room,rm.1,rm.2,rm.2,rm.4,rm.6,off,rm.1,rm.1,rm.3,rm.4,off,off,off

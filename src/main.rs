@@ -269,7 +269,7 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                 } else {
                     // Trainees need to mutate the jobs vector in a different
                     // way than front to back.
-                    let next_pair = if n.trainee.unwrap_or(false) {
+                    let next_pair = if n.trainee.unwrap_or(false) && (job_variants.first().unwrap().0 != off_variant.0) {
                         let mut clone = job_variants.clone();
                         clone.retain(|j| j.1.for_trainees.unwrap_or(true));
                         let variant = clone.pop().expect("No trainee job variants left");
