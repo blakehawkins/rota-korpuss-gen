@@ -194,7 +194,8 @@ fn do_validates(cfg: &Config) -> Result<()> {
     Ok(())
 }
 
-fn maybe_write_excel_sep<W: std::io::Write>(wtr: &mut W, cfg: &Config) -> Result<()> {
+fn maybe_write_excel_sep<W: std::io::Write>(wtr: &mut W,
+                                            cfg: &Config) -> Result<()> {
     if cfg.excel.is_some() && cfg.excel.unwrap() != false {
         writeln!(wtr, "sep=,")?;
     }
@@ -225,9 +226,8 @@ fn write_header(wtr: &mut csv::Writer<File>, dates: &Dates) -> Result<()> {
     Ok(())
 }
 
-fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
-    write_header(&mut wtr, &cfg.dates)?;
 
+fn write_nurses(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<usize> {
     // Nurses
     let mut nurse_map: HashMap<&str, Vec<String>> = HashMap::new();
     cfg.people.nurses.iter().for_each(|n| {
@@ -250,10 +250,11 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
             let off_variant = (&"off".into(), &empty_nurse_job);
             let max_off_length = people_count -
                                  (cfg.rooms.len() * cfg.nurses_jobs.len());
+            let off_iter = iter::repeat(off_variant).take(max_off_length);
             let mut job_variants = cfg.rooms
                                       .iter()
                                       .cartesian_product(&cfg.nurses_jobs)
-                                      .chain(iter::repeat(off_variant).take(max_off_length))
+                                      .chain(off_iter)
                                       .cycle()
                                       .skip(dom)
                                       .take(cfg.dates.end - cfg.dates.start)
@@ -264,18 +265,30 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
             cfg.people.nurses.iter().for_each(|n| {
                 let its_vec = nurse_map.get_mut(&&n.name[..]).unwrap();
 
-                if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
+                if n.days.is_some() && !n.days
+                                         .clone()
+                                         .unwrap()
+                                         .contains(&day.to_string()) {
                     (*its_vec).push("off (part time)".into());
                 } else {
                     // Trainees need to mutate the jobs vector in a different
                     // way than front to back.
-                    let next_pair = if n.trainee.unwrap_or(false) && (job_variants.first().unwrap().0 != off_variant.0) {
+                    let next_pair = if n.trainee.unwrap_or(false) &&
+                                       (job_variants.first()
+                                                    .unwrap()
+                                                    .0 != off_variant.0) {
                         let mut clone = job_variants.clone();
                         clone.retain(|j| j.1.for_trainees.unwrap_or(true));
-                        let variant = clone.pop().expect("No trainee job variants left");
+                        let none_left_pop = "No trainee job variants left";
+                        let none_left_find = "No trainee job variant left to \
+                                              remove";
+                        let variant = clone.pop()
+                                           .expect(none_left_pop);
                         let idx = job_variants.iter()
-                                              .position(|j| j.1.for_trainees.unwrap_or(true))
-                                              .expect("No trainee job variant left to remove");
+                                              .position(|j| j.1
+                                                             .for_trainees
+                                                             .unwrap_or(true))
+                                              .expect(none_left_find);
                         job_variants.remove(idx);
                         variant
                     } else {
@@ -297,11 +310,21 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
         wtr.write_record(&record)?;
     }
 
+    Ok(nurse_map.iter().next().unwrap().1.len())
+}
+
+
+fn write_empty(wtr: &mut csv::Writer<File>, size: usize) -> Result<()> {
     // Empty row
-    let mut empty_record = vec![""; nurse_map.iter().next().unwrap().1.len()];
+    let mut empty_record = vec![""; size];
     empty_record.insert(0, "");
     wtr.write_record(&empty_record)?;
 
+    Ok(())
+}
+
+
+fn write_supporters(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
     // Supporters
     let mut supporter_map: HashMap<&str, Vec<String>> = HashMap::new();
     cfg.people.supporters.iter().for_each(|n| {
@@ -320,16 +343,21 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
 
         if (day != &"saturday") && (day != &"sunday") {
             let off_variant = &"off".to_string();
+            let off_iter = iter::repeat(off_variant).take(people_count -
+                                                          cfg.rooms.len());
             let mut job_variants = cfg.rooms
                                       .iter()
-                                      .chain(iter::repeat(off_variant).take(people_count - cfg.rooms.len()))
+                                      .chain(off_iter)
                                       .cycle()
                                       .skip(dom);
 
             cfg.people.supporters.iter().for_each(|n| {
                 let its_vec = supporter_map.get_mut(&&n.name[..]).unwrap();
 
-                if n.days.is_some() && !n.days.clone().unwrap().contains(&day.to_string()) {
+                if n.days.is_some() && !n.days
+                                         .clone()
+                                         .unwrap()
+                                         .contains(&day.to_string()) {
                     (*its_vec).push("off-day".into());
                 } else {
                     let next_job = job_variants.next().unwrap();
@@ -348,13 +376,31 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
     Ok(())
 }
 
+
+fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+    write_header(&mut wtr, &cfg.dates)?;
+
+    let col_count = write_nurses(wtr, cfg)?;
+
+    write_empty(wtr, col_count)?;
+
+    write_supporters(wtr, cfg)?;
+
+    Ok(())
+}
+
 fn run() -> Result<()> {
     let opt = Opt::from_args();
 
+    let input_err = || format!("Couldn't open {} as a file path.", &opt.input);
+    let yaml_err = || format!("The input {} was an invalid yaml file.",
+                              &opt.input);
+    let out_err = || format!("Couldn't open {} for writing.", &opt.output);
+
     let f = OpenOptions::new().read(true)
                               .open(&opt.input)
-                              .chain_err(|| format!("Couldn't open {} as a file path.", &opt.input))?;
-    let cfg: Config = serde_yaml::from_reader(f).chain_err(|| format!("The input {} was an invalid yaml file.", &opt.input))?;
+                              .chain_err(input_err)?;
+    let cfg: Config = serde_yaml::from_reader(f).chain_err(yaml_err)?;
 
     do_validates(&cfg)?;
 
@@ -362,7 +408,7 @@ fn run() -> Result<()> {
                                     .create(true)
                                     .truncate(true)
                                     .open(&opt.output)
-                                    .chain_err(|| format!("Couldn't open {} for writing.", &opt.output))?;
+                                    .chain_err(out_err)?;
 
     maybe_write_excel_sep(&mut out, &cfg)?;
 
