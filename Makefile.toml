@@ -16,3 +16,14 @@ echo "Archive generated in rota-gen-${CARGO_MAKE_CRATE_VERSION}.zip"
 
 [tasks.default]
 dependencies = ["build", "zip"]
+
+[tasks.off_stats]
+script_runner = "@shell"
+script = [
+'''
+cat rota.csv | tail -n +3 | ruby offs.rb | sort -n | tail -n +2 | xsv stats | xsv select 3- | xsv table
+'''
+]
+
+[tasks.stats]
+dependencies = ["build", "off_stats"]
