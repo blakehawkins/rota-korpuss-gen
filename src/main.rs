@@ -68,6 +68,9 @@ struct Opt {
 
     #[structopt(help = "Output file", default_value = "rota.csv")]
     output: String,
+
+    #[structopt(help = "Don't block before exit", short="b", long="no-block")]
+    block: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -420,6 +423,12 @@ fn run() -> Result<()> {
 
     println!("\n  File generated successfully into {}.", &opt.output);
 
+    // Maybe await a keyboard event before closing.
+    if !opt.block {
+        println!("\nPress Enter when finished.");
+        let _ = std::io::stdin().bytes().next().and_then(|r| r.ok());
+    }
+
     Ok(())
 }
 
@@ -443,10 +452,6 @@ fn main() {
 
         ret = 1;
     }
-
-    // Await a keyboard event before closing.
-    println!("\nPress Enter when finished.");
-    let _ = std::io::stdin().bytes().next().and_then(|r| r.ok());
 
     ::std::process::exit(ret);
 }

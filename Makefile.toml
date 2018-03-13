@@ -22,8 +22,17 @@ script_runner = "@shell"
 script = [
 '''
 cat rota.csv | tail -n +3 | ruby offs.rb | sort -n | tail -n +2 | xsv stats | xsv select 3- | xsv table
+# cat rota.csv | tail -n +2 | xsv frequency | grep -v ",1\$" | grep -v ",off" | xsv select 2- | xsv table
+'''
+]
+
+[tasks.run]
+script_runner = "@shell"
+script = [
+'''
+cargo run -- --no-block
 '''
 ]
 
 [tasks.stats]
-dependencies = ["build", "off_stats"]
+dependencies = ["build", "run", "off_stats"]
