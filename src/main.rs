@@ -1,25 +1,12 @@
 #![recursion_limit = "1024"]
 /// A generator for a simple rota using nurse data.
 
-extern crate csv;
-
-#[macro_use]
-extern crate error_chain;
-
-extern crate itertools;
-
-#[macro_use]
-extern crate serde_derive;
-
-extern crate serde_yaml;
-extern crate structopt;
-
-#[macro_use]
-extern crate structopt_derive;
-
+use anyhow::{ensure, Context, Result};
 use itertools::Itertools;
-
+use serde::{Serialize, Deserialize};
 use structopt::StructOpt;
+use structopt_derive::StructOpt;
+use thiserror::Error;
 
 use std::collections::HashMap;
 use std::fs::File;
@@ -27,38 +14,21 @@ use std::fs::OpenOptions;
 use std::io::Read;
 use std::iter;
 
-mod errors {
-    error_chain! {}
-}
 
-error_chain! {
-    foreign_links {
-        Csv(::csv::Error);
-        Io(::std::io::Error);
-    }
+#[derive(Error, Debug, Clone, Eq, PartialEq)]
+enum ErrorKind {
+    #[error("Invalid month name: {0}")]
+    InvalidMonth(String),
 
-    errors {
-        InvalidMonth(m: String) {
-            description("invalid month name")
-            display("invalid month name: '{}'", m)
-        }
+    #[error("Invalid weekday name: {0}")]
+    InvalidWeekday(String),
 
-        InvalidWeekday(d: String) {
-            description("invalid weekday")
-            display("invalid weekday name: '{}'", d)
-        }
+    #[error("Invalid date of the month: {0}")]
+    InvalidDate(usize),
 
-        InvalidRoom(r: String) {
-            description("invalid room")
-            display("invalid room name: '{}'", r)
-        }
-
-        InvalidDate(d: usize) {
-            description("invalid date of the month")
-            display("impossible date of the month: '{}'", d)
-        }
-    }
-}
+    #[error("Invalid room name: {0}")]
+    InvalidRoom(String),
+}      
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Rota Korpuss Gen", about = "Generate a rota for Stradini")]
@@ -402,8 +372,8 @@ fn run() -> Result<()> {
 
     let f = OpenOptions::new().read(true)
                               .open(&opt.input)
-                              .chain_err(input_err)?;
-    let cfg: Config = serde_yaml::from_reader(f).chain_err(yaml_err)?;
+                              .with_context(input_err)?;
+    let cfg: Config = serde_yaml::from_reader(f).with_context(yaml_err)?;
 
     do_validates(&cfg)?;
 
@@ -411,7 +381,7 @@ fn run() -> Result<()> {
                                     .create(true)
                                     .truncate(true)
                                     .open(&opt.output)
-                                    .chain_err(out_err)?;
+                                    .with_context(out_err)?;
 
     maybe_write_excel_sep(&mut out, &cfg)?;
 
@@ -432,26 +402,6 @@ fn run() -> Result<()> {
     Ok(())
 }
 
-fn main() {
-    let mut ret = 0;
-
-    if let Err(ref e) = run() {
-        use std::io::Write;
-        let stderr = &mut ::std::io::stderr();
-        let errmsg = "Error writing to stderr";
-
-        writeln!(stderr, "error: {}", e).expect(errmsg);
-
-        for e in e.iter().skip(1) {
-            writeln!(stderr, "caused by: {}", e).expect(errmsg);
-        }
-
-        if let Some(backtrace) = e.backtrace() {
-            writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
-        }
-
-        ret = 1;
-    }
-
-    ::std::process::exit(ret);
+fn main() -> Result<()> {
+    run()
 }
