@@ -4,8 +4,7 @@
 use anyhow::{ensure, Context, Result};
 use itertools::Itertools;
 use serde::{Serialize, Deserialize};
-use structopt::StructOpt;
-use structopt_derive::StructOpt;
+use clap::StructOpt;
 use thiserror::Error;
 
 use std::collections::HashMap;
@@ -39,7 +38,7 @@ struct Opt {
     #[structopt(help = "Output file", default_value = "rota.csv")]
     output: String,
 
-    #[structopt(help = "Don't block before exit", short="b", long="no-block")]
+    #[structopt(help = "Don't block before exit", short='b', long="no-block")]
     block: bool,
 }
 
