@@ -4,7 +4,7 @@
 use anyhow::{ensure, Context, Result};
 use itertools::Itertools;
 use serde::{Serialize, Deserialize};
-use clap::StructOpt;
+use clap::Parser;
 use thiserror::Error;
 
 use std::collections::HashMap;
@@ -29,16 +29,16 @@ enum ErrorKind {
     InvalidRoom(String),
 }      
 
-#[derive(StructOpt, Debug)]
-#[structopt(name = "Rota Korpuss Gen", about = "Generate a rota for Stradini")]
+#[derive(Parser, Debug)]
+#[command(name = "Rota Korpuss Gen", about = "Generate a rota for Stradini")]
 struct Opt {
-    #[structopt(help = "Input file", default_value = "config.yaml")]
+    #[arg(help = "Input file", default_value = "config.yaml")]
     input: String,
 
-    #[structopt(help = "Output file", default_value = "rota.csv")]
+    #[arg(help = "Output file", default_value = "rota.csv")]
     output: String,
 
-    #[structopt(help = "Don't block before exit", short='b', long="no-block")]
+    #[arg(help = "Don't block before exit", short='b', long="no-block")]
     block: bool,
 }
 
@@ -362,7 +362,7 @@ fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
 }
 
 fn run() -> Result<()> {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     let input_err = || format!("Couldn't open {} as a file path.", &opt.input);
     let yaml_err = || format!("The input {} was an invalid yaml file.",
