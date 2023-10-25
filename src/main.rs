@@ -155,20 +155,20 @@ fn do_validate_rooms(cfg: &Config) -> Result<()> {
 }
 
 fn do_validates(cfg: &Config) -> Result<()> {
-    do_validate_dates(&cfg)?;
+    do_validate_dates(cfg)?;
 
-    do_validate_rooms(&cfg)?;
+    do_validate_rooms(cfg)?;
 
     // Sanity check dates.
     ensure!(cfg.dates.end < 33,
-            ErrorKind::InvalidDate(cfg.dates.end.clone()));
+            ErrorKind::InvalidDate(cfg.dates.end));
 
     Ok(())
 }
 
 fn maybe_write_excel_sep<W: std::io::Write>(wtr: &mut W,
                                             cfg: &Config) -> Result<()> {
-    if cfg.excel.is_some() && cfg.excel.unwrap() != false {
+    if cfg.excel.is_some() && cfg.excel.unwrap() {
         writeln!(wtr, "sep=,")?;
     }
 
@@ -333,7 +333,7 @@ fn write_supporters(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
                     (*its_vec).push("off-day".into());
                 } else {
                     let next_job = job_variants.next().unwrap();
-                    (*its_vec).push(format!("{}", next_job));
+                    (*its_vec).push(next_job.to_string());
                 }
             });
         }
@@ -349,8 +349,8 @@ fn write_supporters(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
 }
 
 
-fn do_writes(mut wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
-    write_header(&mut wtr, &cfg.dates)?;
+fn do_writes(wtr: &mut csv::Writer<File>, cfg: &Config) -> Result<()> {
+    write_header(wtr, &cfg.dates)?;
 
     let col_count = write_nurses(wtr, cfg)?;
 
